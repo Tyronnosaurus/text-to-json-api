@@ -16,3 +16,19 @@ age: 25,
 isStudent: true,
 courses: ["computer science", "mathematics"],
 }`
+
+
+
+export const EXAMPLE_PROMPT_FRONTPAGE = `{
+    "data": "John is 25 years old and studies computer science and mathematics at university.",
+
+    "format": {
+      "name": {"type": "string"},
+      "age": {"type": "number"},
+      "isStudent": {"type": "boolean"},
+      "courses": {
+        "type": "array",
+        "items": {"type": "string"}
+      }
+    }
+}`

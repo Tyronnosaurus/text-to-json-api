@@ -1,6 +1,6 @@
 ## JSON API
 
-This project is an API which accepts a POST request containing text and a JSON schema. It will use AI to extract data from the text and return a JSON with the provided schema and filled with the extracted data.
+This project is an API which accepts a POST request containing text and a JSON schema. It will use AI to extract data from the text and return it as a JSON in the specified schema.
 
 POST body:
 ```
@@ -28,9 +28,13 @@ Returned JSON:
 }
 ```
 
+You can try te API by sending an HTTP request through an application like Postman to the entrypoint /api/json.
 
+Alternatively you can use an interface located at the homepage of the app:
 
+![Homepage](home.png "Homepage")
 
+Note that if you run this project locally, you'll have to provide your own OpenAI API key in the .env file
 
 ## Getting Started
 
