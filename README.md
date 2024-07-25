@@ -1,6 +1,41 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## JSON API
+
+This project is an API which accepts a POST request containing text and a JSON schema. It will use AI to extract data from the text and return a JSON with the provided schema and filled with the extracted data.
+
+POST body:
+```
+{
+    "data": "I'm Eduard, a 33 years old engineer who likes electronics and programming.",
+
+    "format": {
+        "name": {"type": "string"},
+        "age": {"type": "number"},
+        "occupation": {"type": "string"},
+        "hobbies": {"type": "array", "items": {"type": "string"}}
+    }
+}
+```
+Returned JSON:
+```
+{
+    "name": "Eduard",
+    "age": 33,
+    "occupation": "engineer",
+    "hobbies": [
+        "electronics",
+        "programming"
+    ]
+}
+```
+
+
+
+
 
 ## Getting Started
+
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
 
 First, run the development server:
 
