@@ -4,8 +4,10 @@ import { z, ZodTypeAny } from "zod"
 import { EXAMPLE_ANSWER, EXAMPLE_PROMPT } from "./example"
 
 
+// Determines the type of a given schema
 const determineSchemaType = (schema: any): string => {
-    // {type: "string"}
+    // If schema is like {type: "string"}   -->  Return "string"
+    // If schema is an array                -->  Return "array"
 
     if(!schema.hasOwnProperty("type")){
         if(Array.isArray(schema)) return "array"
@@ -16,31 +18,36 @@ const determineSchemaType = (schema: any): string => {
 }
 
 
-// We need to convert the format provided by the user to a zod format:
+// Converts the format provided by the user to a zod format:
 // "format": {
-//    "age": {"type":"number"}      --->  z.number()
+//    "age": {"type":"number"}      --->    z.number()
 // }
 const jsonSchemaToZod = (schema: any): ZodTypeAny => {
+
     const type = determineSchemaType(schema)
 
     switch (type) {
         case "string":
             return z.string().nullable()
+        
         case "number":
             return z.number().nullable()
+
         case "boolean":
             return z.boolean().nullable()
+
         case "array":
             return z.array(jsonSchemaToZod(schema.items)).nullable()
-        case "object":
-            const shape: Record<string, ZodTypeAny> = {}
+
+        case "object":  // If schema is an object, recursively process each key
+            const shape: Record<string, ZodTypeAny> = {}    // map of properties: [key1:type1, key2:type2, ...]
 
             for (const key in schema) {
-                if(key !== "type")
-                    shape[key] = jsonSchemaToZod(schema[key])
+                if(key !== "type") shape[key] = jsonSchemaToZod(schema[key])
             }
 
             return z.object(shape)
+
         default:
             throw new Error(`Unsupported data type: ${type}`)
     }
@@ -86,9 +93,9 @@ export const POST = async (req: NextRequest) => {
     // Step 3
     const validationResult = await RetryablePromise.retry<object>(5, async (resolve, reject) => {
         try {
-            // call ai
+            // Call AI
             const res = await openai.chat.completions.create({
-                model: "gpt-4o",
+                model: "gpt-4o-mini",
                 messages: [
                     {
                         role: "assistant",
@@ -104,18 +111,14 @@ export const POST = async (req: NextRequest) => {
                     },
                     {
                         role: "user",
-                        content: `DATA: \n"${data}"\n\n-----------\nExpected JSON format: 
+                        content: `DATA: \n"${data}"\n\n-----------\nExpected JSON format:
                                     ${JSON.stringify(format, null, 2)}
                                     \n\n-----------\nValid JSON output in expected format:`
                     }
                 ]
             })
 
-            
-
             const text = res.choices[0].message.content
-
-            console.log(text)
 
             // Validate JSON. If text is null, pass an empty string
             const validationResult = dynamicSchema.parse(JSON.parse(text || ""))
